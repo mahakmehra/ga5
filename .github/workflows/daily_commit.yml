@@ -1,0 +1,33 @@
+name: Daily Commit Automation
+
+on:
+  schedule:
+    # Runs every day at 14:05 UTC (example specific time — adjust if needed)
+    - cron: '5 14 * * *'
+  workflow_dispatch:  # allows you to test manually
+
+jobs:
+  daily_commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # REQUIRED to allow pushing changes
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create Commit by 23f3001989@ds.study.iitm.ac.in
+        run: |
+          # Ensure git user is set up
+          git config user.name "DevSync Bot"
+          git config user.email "23f3001989@ds.study.iitm.ac.in"
+
+          # Create or update a file to guarantee a change each run
+          echo "Automated update at $(date -u)" > daily_update.txt
+
+          # Add and commit changes (forces commit every time)
+          git add daily_update.txt
+          git commit -m "Automated daily commit at $(date -u)" || echo "No changes to commit"
+
+          # Push commit using the automatically provided GITHUB_TOKEN
+          git push
